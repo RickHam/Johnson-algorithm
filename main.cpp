@@ -28,6 +28,7 @@ int bfs(std::vector<int> adj,int s, int n)
 {
     vertex vrhovi[n+1];
     
+    return 0;
 }
 
 
