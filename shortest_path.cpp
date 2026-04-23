@@ -6,10 +6,8 @@
 
 using namespace std;
 
-/*Radi base case. Treba promjeniti int u long long zbog overflowa
-makni all_dist jer je preskupo.
-
-Idem spavat sad. Can't do it now. gl
+/*
+Why you so slooow????
 */
 
 struct Edge{
@@ -128,26 +126,15 @@ int main(void){
 
 
             //Dijkstru pokrenemo na svakom čvoru
-            vector<vector<int>> all_dist(n+1, vector<int>(n+1));
             int min = INT_MAX;
             for(int u = 1; u<=n; u++)
             {
                 vector<int> dist = dijkstra(u,n,new_adj);
                 for(int v = 1; v <= n ; v++)
                 {
-                    if(dist[v] < INT_MAX && u!=v)
-                    {
-                        all_dist[u][v] = dist[v] + h[u] - h[v];
-                    }
-                    else
-                        all_dist[u][v] = INT_MAX;
-                }
-
-                for(int i = 1; i<= n; i++)
-                {
-                    if(i==u) continue;
-                    if(min > all_dist[u][i])
-                        min = all_dist[u][i];   
+                    int realDist = dist[v] + h[u] - h[v];
+                    if(realDist<min)
+                        min = realDist;
                 }
             }
 
