@@ -6,6 +6,10 @@
 
 using namespace std;
 
+/*
+Copy pasteani shortest_path. Poslije ga modificiraj za drugi zadatak.
+*/
+
 struct Edge{
     int u,v,w;
 };
@@ -112,36 +116,25 @@ int main(void){
         }
         else
         {
+            vector <pair<int,int>> new_adj[n+1];
 
             for(vector<Edge>::iterator it = edges.begin(); it != edges.end(); ++it)
             {
                 int w = it->w - h[it->u] + h[it->v];
-                adj[it->u].push_back({it->v, w});
+                new_adj[it->u].push_back({it->v, w});
             }
 
 
             //Dijkstru pokrenemo na svakom čvoru
-            vector<vector<int>> all_dist(n+1, vector<int>(n+1));
-            int min;
+            int min = INT_MAX;
             for(int u = 1; u<=n; u++)
             {
-                vector<int> dist = dijkstra(u,n,adj);
+                vector<int> dist = dijkstra(u,n,new_adj);
                 for(int v = 1; v <= n ; v++)
                 {
-                    if(dist[v] < INT_MAX)
-                    {
-                        all_dist[u][v] = dist[v] - h[u] + h[v];
-                    }
-                    else
-                        all_dist[u][v] = INT_MAX;
-                }
-
-                for(int i = 0; i< n; i++)
-                {
-                    if(u == 1 && i == 0)
-                        min = all_dist[u][i];
-                    if(min > all_dist[u][i])
-                        min = all_dist[u][i];   
+                    int realDist = dist[v] + h[u] - h[v];
+                    if(realDist<min)
+                        min = realDist;
                 }
             }
 

@@ -6,14 +6,20 @@
 
 using namespace std;
 
+/*Radi base case. Treba promjeniti int u long long zbog overflowa
+makni all_dist jer je preskupo.
+
+Idem spavat sad. Can't do it now. gl
+*/
+
 struct Edge{
     int u,v,w;
 };
 
 
-vector<long long> bellmanFord(int N, vector<Edge>& edges)
+vector<int> bellmanFord(int N, vector<Edge>& edges)
 {
-   vector<long long> h(N+1, 0);
+   vector<int> h(N+1, 0);
    
    for(int i = 0; i<N-1; i++)
    {
@@ -29,7 +35,7 @@ vector<long long> bellmanFord(int N, vector<Edge>& edges)
    return h;
 }
 
-bool hasNegativeCycle(int N, vector<Edge>& edges, vector<long long>& h)
+bool hasNegativeCycle(int N, vector<Edge>& edges, vector<int>& h)
 {
     for(vector<Edge>::iterator it = edges.begin(); it != edges.end(); ++it)
     {
@@ -39,9 +45,9 @@ bool hasNegativeCycle(int N, vector<Edge>& edges, vector<long long>& h)
     return false;
 }
 
-vector<long long> dijkstra(int src, int n, vector<pair<int, int>> adj[])
+vector<int> dijkstra(int src, int n, vector<pair<int, int>> adj[])
 {
-    vector<long long> dist(n+1, LLONG_MAX);
+    vector<int> dist(n+1, INT_MAX);
     dist[src] = 0;
 
     //Not scary definicija at all
@@ -102,7 +108,7 @@ int main(void){
             edges.push_back({u,v,w});
         }
 
-        vector<long long> h = bellmanFord(n, edges);
+        vector<int> h = bellmanFord(n, edges);
 
         //Ako ima negativnih ciklusa, očito je najmanji put -inf
         bool provjera = hasNegativeCycle(n, edges, h);
@@ -112,15 +118,40 @@ int main(void){
         }
         else
         {
-            int ans = INT_MAX;
+            vector <pair<int,int>> new_adj[n+1];
 
             for(vector<Edge>::iterator it = edges.begin(); it != edges.end(); ++it)
             {
-                int cur = it->w + h[it->u] -h[it->v];
-                ans = min(ans,cur);
+                int w = it->w - h[it->u] + h[it->v];
+                new_adj[it->u].push_back({it->v, w});
             }
 
-            cout << ans << endl;
+
+            //Dijkstru pokrenemo na svakom čvoru
+            vector<vector<int>> all_dist(n+1, vector<int>(n+1));
+            int min = INT_MAX;
+            for(int u = 1; u<=n; u++)
+            {
+                vector<int> dist = dijkstra(u,n,new_adj);
+                for(int v = 1; v <= n ; v++)
+                {
+                    if(dist[v] < INT_MAX && u!=v)
+                    {
+                        all_dist[u][v] = dist[v] + h[u] - h[v];
+                    }
+                    else
+                        all_dist[u][v] = INT_MAX;
+                }
+
+                for(int i = 1; i<= n; i++)
+                {
+                    if(i==u) continue;
+                    if(min > all_dist[u][i])
+                        min = all_dist[u][i];   
+                }
+            }
+
+            cout<<min<<endl;
         }
 
     }
