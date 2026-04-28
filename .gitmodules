@@ -1,0 +1,3 @@
+[submodule "prezentacija/usyd-beamer-theme"]
+	path = prezentacija/usyd-beamer-theme
+	url = https://github.com/malramsay64/usyd-beamer-theme.git
