@@ -2,7 +2,7 @@
 #include <climits>
 using namespace std;
 
-const int MAXN = 1005;
+const int MAXN = 2005;
 const long long INF = LLONG_MAX;
 
 struct Edge {
@@ -116,14 +116,8 @@ bool johnson(int n, vector<Edge> &edges) {
         return false;
     }
 
-    //Ispis za zadatak
-    cout << "yes\n\n";
-    for (int i = 1; i <= n; ++i) {
-        if (i > 1) 
-            cout << ' ';
-        cout << h[i];
-    }
-    cout << ' ' << h[0] << "\n\n";
+   
+    
 
     // Step 3: Uklanjanje bridova s čvorom 0
     for (int i = 1; i <= n; ++i) {
@@ -143,7 +137,6 @@ bool johnson(int n, vector<Edge> &edges) {
 }
 
 int main() {
-    
     ios::sync_with_stdio(false);
     cin.tie(NULL);
 
@@ -162,25 +155,20 @@ int main() {
             edges.push_back(Edge(u, v, w));
         }
 
-        cout << "graph " << caseNum << ' ';
 
         if (!johnson(n, edges)) {
-            cout << "no\n";
+            cout << "-inf\n";
             continue;
         }
-
+        long long min = INF;
         for (int i = 1; i <= n; ++i) {
             for (int j = 1; j <= n; ++j) {
-                if (j > 1) cout << ' ';
-
-                if (answer[i][j] < INF) {
-                    cout << answer[i][j];
-                } else {
-                    cout << "#";
-                }
+                if(answer[i][j] < min)
+                    min = answer[i][j];
             }
-            cout << '\n';
+            
         }
+        cout << min<<endl;
     }
 
     return 0;
