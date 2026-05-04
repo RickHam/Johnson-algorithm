@@ -7,6 +7,23 @@
 \usepackage{babel}
 \babelprovide[main, import]{croatian}
 
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{amsmath}
+
+\lstset{
+  language=C++,
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray},
+  stringstyle=\color{red},
+  numbers=none,
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=2,
+  morekeywords={vector, pair, priority_queue, greater}
+}
+
 \graphicspath{{usyd-beamer-theme/}}
 
 \mode<presentation>
@@ -68,83 +85,348 @@
 \end{frame}
 
 % =============================================
-% HOW TO MAKE SLIDES - quick reference:
-% =============================================
-%
-% --- Basic slide with text ---
-% \begin{frame}{Slide Title}
-%   Your text here.
-% \end{frame}
-%
-% --- Bullet points ---
-% \begin{frame}{Slide Title}
-%   \begin{itemize}
-%     \item First point
-%     \item Second point
-%     \item Third point
-%   \end{itemize}
-% \end{frame}
-%
-% --- Numbered list ---
-% \begin{frame}{Slide Title}
-%   \begin{enumerate}
-%     \item First
-%     \item Second
-%   \end{enumerate}
-% \end{frame}
-%
-% --- Math formulas ---
-% Inline: $a + b = c$
-% Centered block: \[ a + b = c \]
-%
-% --- Bold / italic ---
-% \textbf{bold text}  \textit{italic text}
-%
-% --- Image ---
-% \begin{frame}{Slide Title}
-%   \includegraphics[width=0.8\textwidth]{filename.png}
-% \end{frame}
-%
-% --- Two columns ---
-% \begin{frame}{Slide Title}
-%   \begin{columns}
-%     \begin{column}{0.5\textwidth}
-%       Left side
-%     \end{column}
-%     \begin{column}{0.5\textwidth}
-%       Right side
-%     \end{column}
-%   \end{columns}
-% \end{frame}
-%
-% --- Code listing (needs \usepackage{listings} in preamble) ---
-% \begin{frame}[fragile]{Slide Title}
-%   \begin{lstlisting}
-%     your code here
-%   \end{lstlisting}
-% \end{frame}
+% MOTIVACIJA
 % =============================================
 
-\begin{frame}{Johnsonov algoritam}
-  Problem: naći najkraći put između svaka dva čvora u usmjerenom težinskom grafu.
-  Čuli smo za Dijkstrin algoritam, ali:
+\begin{frame}{Motivacija}
+  Želimo naći najkraći put između svakog para čvorova u
+  usmjerenom težinskom grafu.
+
+  \vspace{1em}
+  Koje opcije imamo?
   \begin{itemize}
-    \item Dijkstra radi samo na grafovima gdje su težine nenegativne.
-    \item Cilj: pretvoriti negativne težine u nenegativne, pa onda pokrenuti Dijkstru.
+    \item \textbf{Dijkstra iz svakog čvora}: $O((V + E) \log V)$,
+      ali ne radi s negativnim težinama
+    \item \textbf{Floyd-Warshall}: radi uvijek, ali $O(V^3)$
+    \item \textbf{Bellman-Ford iz svakog čvora}: radi s negativnim težinama,
+      ali $O(V^2 E)$, presporo
+  \end{itemize}
+
+  \vspace{1em}
+  Johnsonov algoritam uzima najbolje od oba pristupa:
+  \begin{itemize}
+    \item Radi s negativnim težinama
+    \item Složenost $O(V^2 \log V + VE)$, bolje od Floyd-Warshalla za rijetke grafove
   \end{itemize}
 \end{frame}
 
+% =============================================
+% JOHNSONOV ALGORITAM - ugrubo
+% =============================================
+
 \begin{frame}{Johnsonov algoritam}
-  Sastoji se od dva koraka:
-  \begin{itemize}
-    \item \textbf{Bellman-Ford algoritam:} pretvoriti negativne težine u nenegativne.
-    \item \textbf{Dijkstrin algoritam:} naći najkraći put između svaka dva čvora u usmjerenom težinskom grafu (s
-      nenegativnim težinama!)
-  \end{itemize}
+  Sastoji se od četiri koraka:
+
+  \begin{enumerate}
+    \item \textbf{Bellman-Ford}: transformiramo težine u grafu tako da nemamo negativnih
+    \item \textbf{Negativni ciklusi}: provjera, ako postoje onda se najkraći put ne može izračunati
+    \item \textbf{Dijkstrin algoritam}: naći najkraći put između svaka dva čvora u usmjerenom težinskom grafu (s nenegativnim težinama!)
+    \item \textbf{Vraćanje početnih udaljenosti}: udaljenosti vratimo natrag kakve su bile u originalnom grafu
+  \end{enumerate}
+\end{frame}
+
+% =============================================
+% BELLMAN-FORD - teorija
+% =============================================
+
+\begin{frame}{1. Bellman-Ford algoritam - teorija}
+  Isto traži najkraći put od jednog izvora, ali radi i s negativnim težinama.
+
+  \begin{enumerate}
+    \item Postavi udaljenost izvora na 0, svih ostalih na $\infty$
+    \item Ponovi $(V-1)$ puta: za svaki brid $(u, v, w)$,
+      ako je $\text{dist}[u] + w < \text{dist}[v]$, ažuriraj $\text{dist}[v] = \text{dist}[u] + w$
+  \end{enumerate}
+
+  \vspace{0.3em}
   \centering
-  \raisebox{-.5\height}{\includegraphics[width=0.4\textwidth]{slike/graf_neg.png}}%
-  \raisebox{-.5\height}{\includegraphics[width=0.1\textwidth]{slike/strelica.png}}%
-  \raisebox{-.5\height}{\includegraphics[width=0.4\textwidth]{slike/graf_poz.png}}
+  \raisebox{-.5\height}{%
+    \begin{tikzpicture}[
+      vertex/.style={circle, draw, minimum size=0.6cm, font=\small},
+      edge/.style={->, thick, >=stealth},
+      lbl/.style={font=\scriptsize, fill=white, inner sep=1pt}
+    ]
+      \node[vertex] (A) at (0, 0)   {A};
+      \node[vertex] (B) at (2, 0)   {B};
+      \node[vertex] (C) at (1, -1.3)  {C};
+
+      \draw[edge] (A) -- node[lbl, above] {4} (B);
+      \draw[edge] (A) -- node[lbl, left]  {2} (C);
+      \draw[edge] (C) -- node[lbl, right] {$-3$} (B);
+    \end{tikzpicture}%
+  }%
+  \hspace{1.5em}
+  \raisebox{-.3\height}{%
+    \scriptsize
+    \begin{tabular}{c|ccc}
+                 & dist[A] & dist[B] & dist[C] \\ \hline
+      Početak    & 0 & $\infty$ & $\infty$ \\
+      Iter.\ 1   & 0 & 4 & 2 \\
+      Iter.\ 2   & 0 & $-1$ & 2
+    \end{tabular}%
+  }
+
+  \vspace{0.5em}
+  \raggedright
+  Složenost: $O(VE)$
+\end{frame}
+
+% =============================================
+% BELLMAN-FORD - u johnsonovom alg.
+% =============================================
+
+\begin{frame}{1. Bellman-Ford - u Johnsonovom algoritmu}
+  Ideja: "reweightanjem" maknemo negativne težine,
+  ali tako da najkraći putevi ostanu isti.
+
+  \vspace{0.3em}
+  {\small
+  \begin{enumerate}
+    \item Dodaj novi čvor $s$ spojen sa svim čvorovima bridovima težine 0
+    \item Pokreni Bellman-Ford iz $s$, dobijemo udaljenosti $h(v) = \text{dist}[v]$ od $s$
+    \item "Reweighting": nove težine $w'(u,v) = w(u,v) + h(u) - h(v)$
+  \end{enumerate}
+  }
+
+  \vspace{0.2em}
+  \centering
+  % --- 1. Početni graf ---
+  \raisebox{-.5\height}{%
+    \begin{tikzpicture}[scale=0.8,
+      vertex/.style={circle, draw, minimum size=0.5cm, font=\scriptsize},
+      edge/.style={->, thick, >=stealth},
+      lbl/.style={font=\tiny, fill=white, inner sep=1pt}
+    ]
+      \node[vertex] (A) at (0, 0)   {A};
+      \node[vertex] (B) at (1.8, 0) {B};
+      \node[vertex] (C) at (0.9, -1.2) {C};
+      \draw[edge] (A) -- node[lbl, above] {4} (B);
+      \draw[edge] (A) -- node[lbl, left]  {2} (C);
+      \draw[edge] (C) -- node[lbl, right] {$-3$} (B);
+    \end{tikzpicture}%
+  }%
+  \hspace{0.3em}%
+  \raisebox{-.5\height}{\large$\longrightarrow$}%
+  \hspace{0.3em}%
+  % --- 2. Graf s dodanim čvorom S ---
+  \raisebox{-.5\height}{%
+    \begin{tikzpicture}[scale=0.8,
+      vertex/.style={circle, draw, minimum size=0.5cm, font=\scriptsize},
+      svertex/.style={circle, draw, fill=red!15, minimum size=0.5cm, font=\scriptsize},
+      edge/.style={->, thick, >=stealth},
+      sedge/.style={->, thick, >=stealth, dashed, red!60!black},
+      lbl/.style={font=\tiny, fill=white, inner sep=1pt}
+    ]
+      \node[vertex] (A) at (0, 0)   {A};
+      \node[vertex] (B) at (1.8, 0) {B};
+      \node[vertex] (C) at (0.9, -1.2) {C};
+      \node[svertex] (S) at (0.9, 1) {S};
+      \draw[edge] (A) -- node[lbl, above] {4} (B);
+      \draw[edge] (A) -- node[lbl, left]  {2} (C);
+      \draw[edge] (C) -- node[lbl, right] {$-3$} (B);
+      \draw[sedge] (S) -- node[lbl, left]  {0} (A);
+      \draw[sedge] (S) -- node[lbl, right] {0} (B);
+      \draw[sedge] (S) -- node[lbl, right] {0} (C);
+    \end{tikzpicture}%
+  }%
+  \hspace{0.3em}%
+  \raisebox{-.5\height}{\large$\longrightarrow$}%
+  \hspace{0.3em}%
+  % --- 3. Reweightani graf ---
+  \raisebox{-.5\height}{%
+    \begin{tikzpicture}[scale=0.8,
+      vertex/.style={circle, draw, minimum size=0.5cm, font=\scriptsize},
+      edge/.style={->, thick, >=stealth},
+      lbl/.style={font=\tiny, fill=white, inner sep=1pt}
+    ]
+      \node[vertex] (A) at (0, 0)   {A};
+      \node[vertex] (B) at (1.8, 0) {B};
+      \node[vertex] (C) at (0.9, -1.2) {C};
+      \draw[edge] (A) -- node[lbl, above] {7} (B);
+      \draw[edge] (A) -- node[lbl, left]  {2} (C);
+      \draw[edge] (C) -- node[lbl, right] {0} (B);
+    \end{tikzpicture}%
+  }
+
+  \vspace{0.8em}
+  {\scriptsize
+  Bellman-Ford iz $S$ daje udaljenosti $h(v)$:
+
+  \vspace{0.3em}
+  \begin{tabular}{c|cccc}
+               & $h(S)$ & $h(A)$ & $h(B)$ & $h(C)$ \\ \hline
+    Početak    & 0 & $\infty$ & $\infty$ & $\infty$ \\
+    Iter.\ 1   & 0 & 0 & $-3$ & 0 \\
+    Iter.\ 2   & 0 & 0 & $-3$ & 0
+  \end{tabular}
+  \hspace{1em}
+  \begin{tabular}{l}
+    $w'(A,B) = 4 + 0 - (-3) = 7$ \\
+    $w'(A,C) = 2 + 0 - 0 = 2$ \\
+    $w'(C,B) = {-3} + 0 - (-3) = 0$
+  \end{tabular}
+  }
+\end{frame}
+
+\begin{frame}{Zašto su nove težine nenegativne?}
+  Bellman-Ford iz novog čvora $s$ daje udaljenosti $h(v)$ za svaki čvor.
+  Nova težina brida:
+  \[ w'(u, v) = w(u, v) + h(u) - h(v) \]
+
+  Bellman-Ford garantira
+  \[ h(v) \leq h(u) + w(u, v) \]
+
+  A to je isto što i
+  \[ w'(u, v) = w(u, v) + h(u) - h(v) \geq 0 \]
+\end{frame}
+
+\begin{frame}{Zašto se najkraći putevi čuvaju?}
+  Za put $p = v_0 \to v_1 \to \cdots \to v_k$:
+  \begin{align*}
+    w'(p) &= \sum_{i=0}^{k-1} w'(v_i, v_{i+1}) \\
+           &= \sum_{i=0}^{k-1} \bigl[ w(v_i, v_{i+1}) + h(v_i) - h(v_{i+1}) \bigr] \\
+           &= w(p) + h(v_0) - h(v_k)
+  \end{align*}
+
+  Članovi $h(v_i)$ se poništavaju, ostaje samo početak i kraj.
+
+  \vspace{0.5em}
+  Svim se putevima od $v_0$ do $v_k$ dodaje $h(v_0)$ i oduzima
+  $h(v_k)$, pa najkraći put od $v_0$ do $v_k$ ostaje isti.
+\end{frame}
+
+% =======================
+% NEGATIVNI CIKLUSI
+% =======================
+
+\begin{frame}{2. Detekcija negativnih ciklusa}
+  Negativni ciklus je ciklus čija je ukupna težina negativna.
+
+  \vspace{0.5em}
+  Ako postoji negativni ciklus, najkraći put nije definiran jer se obilaskom ciklusa
+  udaljenost može smanjivati u beskonačnost.
+
+  \vspace{0.5em}
+  Kako ga detektirati?
+  \begin{itemize}
+    \item Pokrenemo još jednu ($V$-tu) iteraciju Bellman-Forda
+    \item Ako se neka udaljenost još može smanjiti, imamo negativni ciklus
+  \end{itemize}
+
+\end{frame}
+
+
+% =============================================
+% DIJKSTRA
+% =============================================
+
+\begin{frame}{3. Dijkstrin algoritam}
+  Najkraći put od jednog čvora do svih ostalih:
+
+  {\small
+  \begin{enumerate}
+    \item Postavi udaljenost izvora na 0, svih ostalih na $\infty$. Označi sve čvorove kao neposjećene
+    \item Uzmi neposjećeni čvor s najmanjom udaljenosti
+    \item Za svakog susjeda $v$: ako je $\text{dist}[u] + w(u,v) < \text{dist}[v]$, ažuriraj $\text{dist}[v] = \text{dist}[u] + w(u,v)$
+    \item Ponavljaj sve dok svi čvorovi nisu posjećeni
+  \end{enumerate}
+  }
+
+  \vspace{0.2em}
+  \centering
+  \raisebox{-.5\height}{%
+    \begin{tikzpicture}[scale=0.8,
+      vertex/.style={circle, draw, minimum size=0.6cm, font=\small},
+      edge/.style={->, thick, >=stealth},
+      lbl/.style={font=\scriptsize, fill=white, inner sep=1pt}
+    ]
+      \node[vertex] (A) at (0, 0)   {A};
+      \node[vertex] (B) at (2, 0)   {B};
+      \node[vertex] (C) at (1, -1.3)  {C};
+      \draw[edge] (A) -- node[lbl, above] {7} (B);
+      \draw[edge] (A) -- node[lbl, left]  {2} (C);
+      \draw[edge] (C) -- node[lbl, right] {0} (B);
+    \end{tikzpicture}%
+  }%
+  \hspace{1.5em}
+  \raisebox{-.5\height}{%
+    \scriptsize
+    \begin{tabular}{c|c|ccc}
+                 & Posjećen & dist[A] & dist[B] & dist[C] \\ \hline
+      Početak    & --       & 0 & $\infty$ & $\infty$ \\
+      Korak 1    & A        & 0 & 7 & 2 \\
+      Korak 2    & C        & 0 & 2 & 2 \\
+      Korak 3    & B        & 0 & 2 & 2
+    \end{tabular}%
+  }
+
+  \vspace{0.5em}
+  \raggedright
+  Složenost: $O((V + E) \log V)$ s binarnim heapom, $O(V \log V + E)$ s Fibonacci heapom
+\end{frame}
+
+\begin{frame}{4. Vraćanje početnih udaljenosti}
+  Dijkstra nam je dao udaljenosti na reweightanom grafu.
+  Originalne dobijemo formulom:
+  \[ \text{dist}(u, v) = \text{dist}'(u, v) - h(u) + h(v) \]
+
+  \vspace{0.3em}
+  \centering
+  \raisebox{-.5\height}{%
+    \scriptsize
+    \begin{tabular}{c|ccc}
+      & dist$'$[A] & dist$'$[B] & dist$'$[C] \\ \hline
+      Dijkstra iz A & 0 & 2 & 2
+    \end{tabular}
+  }%
+  \hspace{0.5em}%
+  \raisebox{-.5\height}{%
+    \scriptsize
+    \begin{tabular}{c|ccc}
+      & $h(A)$ & $h(B)$ & $h(C)$ \\ \hline
+      & 0 & $-3$ & 0
+    \end{tabular}
+  }
+
+  \vspace{0.5em}
+  {\scriptsize
+  \begin{tabular}{l}
+    $\text{dist}(A,B) = 2 - 0 + (-3) = -1$ \\
+    $\text{dist}(A,C) = 2 - 0 + 0 = 2$
+  \end{tabular}
+  }
+
+  \vspace{0.5em}
+  \raggedright
+  Provjera na originalnom grafu:
+  \begin{align}
+    A \to C \to B &= 2 + (-3) = -1 \\
+    A \to C &= 2 = 2
+  \end{align}
+\end{frame}
+
+
+% =============================================
+% SLOŽENOST
+% =============================================
+
+\begin{frame}{Složenost}
+  \begin{tabular}{l|l}
+    \textbf{Korak} & \textbf{Složenost} \\ \hline
+    Dodaj novi čvor i poveži ga & $O(V)$ \\
+    Bellman-Ford & $O(VE)$ \\
+    Reweighting & $O(E)$ \\
+    Dijkstra $V$ puta & $O(V(V + E)\log V)$ \\
+    Vraćanje udaljenosti & $O(V^2)$ \\ \hline
+    \textbf{Ukupno} & $O(V^2 \log V + VE\log V)$
+  \end{tabular}
+
+  \vspace{1em}
+  Ako koristimo Dijkstru s Fibonacci heapom: $O(V^2 \log V + VE)$
+
+  \vspace{0.5em}
+  Za usporedbu, Floyd-Warshall je $O(V^3)$.
+  Johnson je bolji kad je graf rijedak.
 \end{frame}
 
 \end{document}

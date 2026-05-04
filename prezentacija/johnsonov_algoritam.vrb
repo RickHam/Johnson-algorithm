@@ -1,0 +1,23 @@
+\frametitle{Rješenje: ključni dio}
+\begin{lstlisting}
+vector<int> h = bellmanFord(n, edges);
+if (hasNegativeCycle(n, edges, h)) {
+    cout << "-inf" << endl;
+} else {
+    vector<pair<int,int>> new_adj[n + 1];
+    for (auto& e : edges) {
+        int w = e.w + h[e.u] - h[e.v];
+        new_adj[e.u].push_back({e.v, w});
+    }
+    int mn = INT_MAX;
+    for (int u = 1; u <= n; u++) {
+        auto dist = dijkstra(u, n, new_adj);
+        for (int v = 1; v <= n; v++) {
+            int real = dist[v] - h[u] + h[v];
+            mn = min(mn, real);
+        }
+    }
+    cout << mn << endl;
+}
+\end{lstlisting}
+  Prolazimo sve parove, korigiramo udaljenost i pratimo globalni minimum.
