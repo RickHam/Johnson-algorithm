@@ -88,14 +88,14 @@
 % MOTIVACIJA
 % =============================================
 
-\begin{frame}{Motivacija}
+\begin{frame}{Zadatak}
   Želimo naći najkraći put između svakog para čvorova u
   usmjerenom težinskom grafu.
 
   \vspace{1em}
   Koje opcije imamo?
   \begin{itemize}
-    \item \textbf{Dijkstra iz svakog čvora}: $O((V + E) \log V)$,
+    \item \textbf{Dijkstra iz svakog čvora}: $O(V(V + E) \log V)$,
       ali ne radi s negativnim težinama
     \item \textbf{Floyd-Warshall}: radi uvijek, ali $O(V^3)$
     \item \textbf{Bellman-Ford iz svakog čvora}: radi s negativnim težinama,
@@ -103,10 +103,10 @@
   \end{itemize}
 
   \vspace{1em}
-  Johnsonov algoritam uzima najbolje od oba pristupa:
+  Johnsonov algoritam uzima najbolje od Dijkstre i Bellman-Ford pristupa:
   \begin{itemize}
     \item Radi s negativnim težinama
-    \item Složenost $O(V^2 \log V + VE)$, bolje od Floyd-Warshalla za rijetke grafove
+    \item Složenost $O(V^2 \log V + VE\log V)$, bolje od Floyd-Warshalla za rijetke grafove
   \end{itemize}
 \end{frame}
 
@@ -119,7 +119,7 @@
 
   \begin{enumerate}
     \item \textbf{Bellman-Ford}: transformiramo težine u grafu tako da nemamo negativnih
-    \item \textbf{Negativni ciklusi}: provjera, ako postoje onda se najkraći put ne može izračunati
+    \item \textbf{Negativni ciklusi}: provjera, ako postoje onda je najkraći put proizvoljno malen
     \item \textbf{Dijkstrin algoritam}: naći najkraći put između svaka dva čvora u usmjerenom težinskom grafu (s nenegativnim težinama!)
     \item \textbf{Vraćanje početnih udaljenosti}: udaljenosti vratimo natrag kakve su bile u originalnom grafu
   \end{enumerate}
@@ -134,7 +134,7 @@
 
   \begin{enumerate}
     \item Postavi udaljenost izvora na 0, svih ostalih na $\infty$
-    \item Ponovi $(V-1)$ puta: za svaki brid $(u, v, w)$,
+    \item Ponovi $(V-1)$ puta i dok ima promjena: za svaki brid $(u, v, w)$,
       ako je $\text{dist}[u] + w < \text{dist}[v]$, ažuriraj $\text{dist}[v] = \text{dist}[u] + w$
   \end{enumerate}
 
@@ -160,9 +160,9 @@
     \scriptsize
     \begin{tabular}{c|ccc}
                  & dist[A] & dist[B] & dist[C] \\ \hline
-      Početak    & 0 & $\infty$ & $\infty$ \\
-      Iter.\ 1   & 0 & 4 & 2 \\
-      Iter.\ 2   & 0 & $-1$ & 2
+      Početak    & $0$ & $\infty$ & $\infty$ \\
+      Iter.\ 1   & $0$ & $4$ & $2$ \\
+      Iter.\ 2   & $0$ & $-1$ & $2$
     \end{tabular}%
   }
 
@@ -362,12 +362,14 @@
 
   \vspace{0.5em}
   \raggedright
-  Složenost: $O((V + E) \log V)$ s binarnim heapom, $O(V \log V + E)$ s Fibonacci heapom
+  Složenost: $O((V + E) \log V)$ s heapom, $O(V \log V + E)$ s Fibonacci heapom
 \end{frame}
 
 \begin{frame}{4. Vraćanje početnih udaljenosti}
   Dijkstra nam je dao udaljenosti na reweightanom grafu.
-  Originalne dobijemo formulom:
+  Sjetimo se da su nam nove težine dane s
+  \[ w'(u, v) = w(u, v) + h(u) - h(v) \]
+  Originalne udaljenosti dobijemo formulom:
   \[ \text{dist}(u, v) = \text{dist}'(u, v) - h(u) + h(v) \]
 
   \vspace{0.3em}

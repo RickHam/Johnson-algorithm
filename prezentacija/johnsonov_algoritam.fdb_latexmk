@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1777897993.40252 "johnsonov_algoritam.tex" "johnsonov_algoritam.pdf" "johnsonov_algoritam" 1777897994.60869 0
+["pdflatex"] 1778017044.38832 "johnsonov_algoritam.tex" "johnsonov_algoritam.pdf" "johnsonov_algoritam" 1778017046.05161 0
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1775415801 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1775415801 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1775415801 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -221,10 +221,10 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1775415801 43569 fd570f2fa160877d211e859f687312ba ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1775485825 5527493 19c86858c2f2aeba0063cf799e16774b ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775485728 2532670 df0db78d216ac0e83b337f0a32fbdf3c ""
-  "johnsonov_algoritam.aux" 1777897994.52791 1970 c1ee402ce8bf31fc6499072ac686b1a1 "pdflatex"
-  "johnsonov_algoritam.nav" 1777897994.52891 1202 a971439ba5eedf62b158aa4c3f07763d "pdflatex"
-  "johnsonov_algoritam.out" 1777897994.1009 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "johnsonov_algoritam.tex" 1777897992.08101 13254 007a37d80290ed6c6f60bfa51386dad2 ""
+  "johnsonov_algoritam.aux" 1778017045.91784 1970 c1ee402ce8bf31fc6499072ac686b1a1 "pdflatex"
+  "johnsonov_algoritam.nav" 1778017045.92084 1202 a971439ba5eedf62b158aa4c3f07763d "pdflatex"
+  "johnsonov_algoritam.out" 1778017045.32784 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "johnsonov_algoritam.tex" 1778017043.25881 13393 8447546b09702b22ea89ac3e48f3dd0a ""
   "usyd-beamer-theme/beamercolorthemeusyd.sty" 1777379276.54891 1811 c31119d77004fbc41c044d741a110b40 ""
   "usyd-beamer-theme/beamerfontthemeusyd.sty" 1777379276.54991 310 34d2684057088133c6f3e954198c55e0 ""
   "usyd-beamer-theme/beamerinnerthemeusyd.sty" 1777379276.54991 2529 800d7ee3a7adab25d85b9e54bd662729 ""
