@@ -80,7 +80,7 @@ vector<long long> dijkstra(int n, int source, vector<Edge> &edges, const vector<
             int v = it->first;
             long long w = it->second;
 
-
+            //Samo promjenjeni vrhovi idu na pq jer graf nije nužno povezan. Ostali ostaju inf.
             if (dist[v] > dist[u] + w ) {
                 dist[v] = dist[u] + w;
                 pq.push({dist[v], v});
