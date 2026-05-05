@@ -367,8 +367,8 @@
 
 \begin{frame}{4. Vraćanje početnih udaljenosti}
   Dijkstra nam je dao udaljenosti na reweightanom grafu.
-  Sjetimo se da su nam nove težine dane s
-  \[ w'(u, v) = w(u, v) + h(u) - h(v) \]
+  Sjetimo se da za put $p = v_0 \to v_1 \to \cdots \to v_k$ vrijedi
+  \[ w'(p) = w(p) + h(v_0) - h(v_k) \]
   Originalne udaljenosti dobijemo formulom:
   \[ \text{dist}(u, v) = \text{dist}'(u, v) - h(u) + h(v) \]
 
