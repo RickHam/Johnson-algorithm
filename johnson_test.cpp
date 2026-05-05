@@ -20,9 +20,8 @@ struct Edge {
 
 
 //Vrača !(postoji li negativni ciklus) i mjenja potencijal h.
-bool bellmanFord(int V, int source,  vector<Edge> &edges, vector<long long> &h) {
-    h[source] = 0;
-
+bool bellmanFord(int V,  vector<Edge> &edges, vector<long long> &h) {
+    cout<<endl;
     for (int i = 0; i < V; ++i) {
         bool updated = false;
 
@@ -34,7 +33,12 @@ bool bellmanFord(int V, int source,  vector<Edge> &edges, vector<long long> &h) 
                 updated = true;
             }
         }
-        
+        cout<<"Iteracija B-F "<<i+1<<": "<<endl;
+        for(int k = 1; k<=V; k++)
+        {
+            cout<<h[k]<<" ";
+        }
+        cout<<endl;
         if (!updated) return true;
     }
     //V puta se promjenila vrijednost -> Postoji negativni ciklus 
@@ -91,7 +95,7 @@ vector<long long> dijkstra(int n, int source, vector<Edge> &edges, const vector<
     // Povrat na originalne težine
     for (int i = 1; i <= n; ++i) {
         if (dist[i] < INF) {
-            dist[i] += h[i] - h[source];
+            dist[i] -= h[source] - h[i];
         }
     }
 
@@ -103,16 +107,10 @@ long long answer[MAXN][MAXN];
 
 //Johnsonov algoritam
 bool johnson(int n, vector<Edge> &edges) {
-    vector<long long> h(n + 1, INF);
-
-    //Step 1: Dodavanje umjetnog čvora 0
-    for (int i = 1; i <= n; ++i) {
-        edges.push_back(Edge(0, i, 0));
-    }
-
+    vector<long long> h(n + 1, 0);
 
     //Step 2: Bellman-Ford
-    if (!bellmanFord(n+1, 0, edges, h)) {
+    if (!bellmanFord(n, edges, h)) {
         return false;
     }
 
@@ -123,12 +121,8 @@ bool johnson(int n, vector<Edge> &edges) {
             cout << ' ';
         cout << h[i];
     }
-    cout << ' ' << h[0] << "\n\n";
+    cout << ' ' <<"0"<< "\n\n";
 
-    // Step 3: Uklanjanje bridova s čvorom 0
-    for (int i = 1; i <= n; ++i) {
-        edges.pop_back();
-    }
 
     // Step 4: Pokretanje Dijkstre iz svakog čvora
     for (int i = 1; i <= n; ++i) {

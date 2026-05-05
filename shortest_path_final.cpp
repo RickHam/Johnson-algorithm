@@ -2,7 +2,6 @@
 #include <climits>
 using namespace std;
 
-const int MAXN = 2005;
 const long long INF = LLONG_MAX;
 
 struct Edge {
@@ -20,9 +19,7 @@ struct Edge {
 
 
 //Vrača !(postoji li negativni ciklus) i mjenja potencijal h.
-bool bellmanFord(int V, int source,  vector<Edge> &edges, vector<long long> &h) {
-    h[source] = 0;
-
+bool bellmanFord(int V,   vector<Edge> &edges, vector<long long> &h) {
     for (int i = 0; i < V; ++i) {
         bool updated = false;
 
@@ -91,45 +88,36 @@ vector<long long> dijkstra(int n, int source, vector<Edge> &edges, const vector<
     // Povrat na originalne težine
     for (int i = 1; i <= n; ++i) {
         if (dist[i] < INF) {
-            dist[i] -= h[source] - h[i];
+            dist[i] += h[i] - h[source] ;
         }
     }
 
     return dist;
 }
 
-//Matrica najkračih puteva od čvora i do čvora j
-long long answer[MAXN][MAXN];
+long long minim;
 
 //Johnsonov algoritam
 bool johnson(int n, vector<Edge> &edges) {
-    vector<long long> h(n + 1, INF);
-
-    //Step 1: Dodavanje umjetnog čvora 0
-    for (int i = 1; i <= n; ++i) {
-        edges.push_back(Edge(0, i, 0));
-    }
+    //Nakon prve iteracije s početnim čvorom dobimo h(i) = 0 i h(0) se ne mjenja
+    vector<long long> h(n + 1, 0);
 
 
-    //Step 2: Bellman-Ford
-    if (!bellmanFord(n+1, 0, edges, h)) {
+    //Step 1: Bellman-Ford
+    if (!bellmanFord(n, edges, h)) {
         return false;
     }
 
-   
-    
 
-    // Step 3: Uklanjanje bridova s čvorom 0
-    for (int i = 1; i <= n; ++i) {
-        edges.pop_back();
-    }
 
-    // Step 4: Pokretanje Dijkstre iz svakog čvora
+    // Step 2: Pokretanje Dijkstre iz svakog čvora
+    minim = LLONG_MAX;
     for (int i = 1; i <= n; ++i) {
         vector<long long> dist = dijkstra(n, i, edges, h);
 
         for (int j = 1; j <= n; ++j) {
-            answer[i][j] = dist[j];
+            if(dist[j] < minim)
+                minim = dist[j];
         }
     }
 
@@ -160,15 +148,8 @@ int main() {
             cout << "-inf\n";
             continue;
         }
-        long long min = INF;
-        for (int i = 1; i <= n; ++i) {
-            for (int j = 1; j <= n; ++j) {
-                if(answer[i][j] < min)
-                    min = answer[i][j];
-            }
-            
-        }
-        cout << min<<endl;
+        
+        cout << minim <<endl;
     }
 
     return 0;
